@@ -26,14 +26,20 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
 
-function prepare() {
-  if (process.env.NODE_ENV === 'development') {
-    const { worker } = require('./mocks/browser')
-    return worker.start()
-  }
-
-  return Promise.resolve()
-}
+const prepare = () =>
+	new Promise((resolve, reject) => {
+		if (process.env.NODE_ENV === 'development') {
+			import('./mocks/browser')
+				.then(({ worker }) => {
+					resolve(worker.start());
+				})
+				.catch((err) => {
+					reject(err);
+				});
+		} else {
+      resolve("");
+    }
+	});
 
 prepare().then(() => {
   ReactDOM.render(<App />, document.getElementById('root'))
